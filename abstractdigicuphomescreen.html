@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZEN AI - Neural Network Visualization</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: #000;
+            font-family: Arial, sans-serif;
+        }
+        #info {
+            position: absolute;
+            top: 20px;
+            width: 100%;
+            color: #00ffff;
+            text-align: center;
+            font-size: 24px;
+            text-shadow: 0 0 10px #00ffff;
+        }
+        #description {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            color: #fff;
+            font-size: 16px;
+            line-height: 1.6;
+            text-shadow: 0 0 5px #00ffff;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="info">ZEN AI - Neural Network Visualization</div>
+    <div id="description">
+        <h1 style="font-size: 28px; margin-bottom: 10px; color: #00ffff;">ZEN AI: Powering Intelligent Integration</h1>
+        <p>Witness the dynamic neural network that drives ZEN AI's cutting-edge capabilities. This visualization represents our advanced machine learning algorithms processing vast amounts of data in real-time.</p>
+        <p>Watch as information flows through the network, showcasing ZEN AI's ability to adapt, learn, and make intelligent decisions to revolutionize your business processes.</p>
+    </div>
+    <script>
+        let scene, camera, renderer, neuralNetwork, dataFlows;
+        const layerCount = 5;
+        const nodesPerLayer = 10;
+        const nodeSize = 0.3;
+
+        function init() {
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(0, 0, 30);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            document.body.appendChild(renderer.domElement);
+
+            createNeuralNetwork();
+            createDataFlows();
+
+            // Lights
+            const ambientLight = new THREE.AmbientLight(0x404040);
+            scene.add(ambientLight);
+
+            const pointLight = new THREE.PointLight(0xffffff, 1, 100);
+            pointLight.position.set(0, 0, 50);
+            scene.add(pointLight);
+
+            // Animate camera
+            gsap.to(camera.position, {
+                x: 15,
+                y: 10,
+                z: 35,
+                duration: 30,
+                repeat: -1,
+                yoyo: true,
+                ease: "power1.inOut"
+            });
+
+            animate();
+        }
+
+        function createNeuralNetwork() {
+            neuralNetwork = new THREE.Group();
+            const nodeMaterial = new THREE.MeshPhongMaterial({ color: 0x00ffff, emissive: 0x00ffff });
+            const connectionMaterial = new THREE.LineBasicMaterial({ color: 0x0088ff, transparent: true, opacity: 0.3 });
+
+            for (let layer = 0; layer < layerCount; layer++) {
+                for (let node = 0; node < nodesPerLayer; node++) {
+                    const sphere = new THREE.Mesh(new THREE.SphereGeometry(nodeSize, 32, 32), nodeMaterial);
+                    sphere.position.set(layer * 5 - 10, node * 2 - 9, 0);
+                    neuralNetwork.add(sphere);
+
+                    // Add connections to next layer
+                    if (layer < layerCount - 1) {
+                        for (let nextNode = 0; nextNode < nodesPerLayer; nextNode++) {
+                            const geometry = new THREE.BufferGeometry().setFromPoints([
+                                sphere.position,
+                                new THREE.Vector3((layer + 1) * 5 - 10, nextNode * 2 - 9, 0)
+                            ]);
+                            const line = new THREE.Line(geometry, connectionMaterial);
+                            neuralNetwork.add(line);
+                        }
+                    }
+                }
+            }
+
+            scene.add(neuralNetwork);
+        }
+
+        function createDataFlows() {
+            dataFlows = new THREE.Group();
+            const flowMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00, transparent: true, opacity: 0.7 });
+
+            for (let i = 0; i < 50; i++) {
+                const flow = new THREE.Mesh(new THREE.SphereGeometry(0.1, 16, 16), flowMaterial);
+                flow.position.set(Math.random() * 20 - 10, Math.random() * 20 - 10, Math.random() * 10 - 5);
+                dataFlows.add(flow);
+
+                animateDataFlow(flow);
+            }
+
+            scene.add(dataFlows);
+        }
+
+        function animateDataFlow(flow) {
+            const duration = Math.random() * 3 + 2;
+            const delay = Math.random() * 2;
+
+            gsap.to(flow.position, {
+                x: Math.random() * 20 - 10,
+                y: Math.random() * 20 - 10,
+                z: Math.random() * 10 - 5,
+                duration: duration,
+                delay: delay,
+                ease: "power1.inOut",
+                onComplete: () => {
+                    animateDataFlow(flow);
+                }
+            });
+
+            gsap.to(flow.material, {
+                opacity: 0.2,
+                duration: duration / 2,
+                yoyo: true,
+                repeat: 1,
+                delay: delay,
+                ease: "power1.inOut"
+            });
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            const time = performance.now() * 0.001;
+
+            // Pulsate nodes
+            neuralNetwork.children.forEach((child, index) => {
+                if (child instanceof THREE.Mesh) {
+                    child.scale.setScalar(1 + Math.sin(time * 2 + index) * 0.1);
+                }
+            });
+
+            // Rotate neural network
+            neuralNetwork.rotation.y = Math.sin(time * 0.2) * 0.2;
+
+            camera.lookAt(scene.position);
+
+            renderer.render(scene, camera);
+        }
+
+        init();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>
