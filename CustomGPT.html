@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fully Customizable Chatbot Builder</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(45deg, rgba(108,185,255,0.7) 0%, rgba(136,255,224,0.7) 100%);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            border-radius: 10px;
+            padding: 2rem;
+            width: 95%;
+            max-width: 1400px;
+        }
+        h1, h2 {
+            color: #333;
+            text-align: center;
+        }
+        .preview-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 600px;
+            margin-bottom: 2rem;
+            background: #f0f0f0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        #chatbotPreview {
+            width: 350px;
+            height: 550px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        .chat-header {
+            background: #4CAF50;
+            color: white;
+            padding: 15px;
+            font-weight: bold;
+            text-align: center;
+        }
+        .chat-messages {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 15px;
+        }
+        .message {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 10px;
+            max-width: 80%;
+        }
+        .user-message {
+            background-color: #e1ffc7;
+            align-self: flex-end;
+            margin-left: auto;
+        }
+        .bot-message {
+            background-color: #f0f0f0;
+            align-self: flex-start;
+        }
+        .chat-input {
+            display: flex;
+            padding: 15px;
+            background: #f0f0f0;
+        }
+        .chat-input input {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 20px;
+        }
+        .chat-input button {
+            padding: 10px 20px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+        .control-group {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 1rem;
+            border-radius: 10px;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+        input[type="range"], input[type="text"], input[type="color"], select {
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+        .code-output-container {
+            margin-top: 2rem;
+            position: relative;
+        }
+        .code-output {
+            background: rgba(0, 0, 0, 0.1);
+            padding: 1rem;
+            border-radius: 10px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        #copyButton {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        #copyButton:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Fully Customizable Chatbot Builder</h1>
+        <div class="preview-container">
+            <div id="chatbotPreview">
+                <div class="chat-header">Chatbot</div>
+                <div class="chat-messages">
+                    <div class="message bot-message">Hello! How can I assist you today?</div>
+                    <div class="message user-message">Hi! I have a question.</div>
+                </div>
+                <div class="chat-input">
+                    <input type="text" placeholder="Type your message...">
+                    <button>Send</button>
+                </div>
+            </div>
+        </div>
+        <h2>Customization Options</h2>
+        <div class="controls">
+            <div class="control-group">
+                <h3>General</h3>
+                <label for="chatWidth">Chat Width:</label>
+                <input type="range" id="chatWidth" min="250" max="500" value="350">
+                <label for="chatHeight">Chat Height:</label>
+                <input type="range" id="chatHeight" min="400" max="800" value="550">
+                <label for="borderRadius">Border Radius:</label>
+                <input type="range" id="borderRadius" min="0" max="20" value="10">
+                <label for="fontFamily">Font Family:</label>
+                <select id="fontFamily">
+                    <option value="Arial, sans-serif">Arial</option>
+                    <option value="'Segoe UI', Tahoma, Geneva, Verdana, sans-serif">Segoe UI</option>
+                    <option value="'Courier New', Courier, monospace">Courier New</option>
+                    <option value="Georgia, serif">Georgia</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <h3>Header</h3>
+                <label for="headerColor">Header Background:</label>
+                <input type="color" id="headerColor" value="#4CAF50">
+                <label for="headerTextColor">Header Text Color:</label>
+                <input type="color" id="headerTextColor" value="#FFFFFF">
+                <label for="headerText">Header Text:</label>
+                <input type="text" id="headerText" value="Chatbot">
+                <label for="headerFontSize">Header Font Size:</label>
+                <input type="range" id="headerFontSize" min="14" max="24" value="18">
+            </div>
+            <div class="control-group">
+                <h3>Messages</h3>
+                <label for="userMsgColor">User Message Color:</label>
+                <input type="color" id="userMsgColor" value="#e1ffc7">
+                <label for="botMsgColor">Bot Message Color:</label>
+                <input type="color" id="botMsgColor" value="#f0f0f0">
+                <label for="msgFontSize">Message Font Size:</label>
+                <input type="range" id="msgFontSize" min="12" max="20" value="14">
+                <label for="msgBorderRadius">Message Border Radius:</label>
+                <input type="range" id="msgBorderRadius" min="0" max="20" value="10">
+            </div>
+            <div class="control-group">
+                <h3>Input Area</h3>
+                <label for="inputBgColor">Input Background:</label>
+                <input type="color" id="inputBgColor" value="#f0f0f0">
+                <label for="inputTextColor">Input Text Color:</label>
+                <input type="color" id="inputTextColor" value="#000000">
+                <label for="buttonColor">Button Color:</label>
+                <input type="color" id="buttonColor" value="#4CAF50">
+                <label for="buttonTextColor">Button Text Color:</label>
+                <input type="color" id="buttonTextColor" value="#FFFFFF">
+            </div>
+            <div class="control-group">
+                <h3>API Configuration</h3>
+                <label for="apiKey">OpenAI API Key:</label>
+                <input type="text" id="apiKey" placeholder="Enter your OpenAI API key">
+                <label for="model">Model:</label>
+                <select id="model">
+                    <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
+                    <option value="gpt-4">GPT-4 (if available)</option>
+                </select>
+            </div>
+        </div>
+        <div class="code-output-container">
+            <div class="code-output" id="codeOutput"></div>
+            <button id="copyButton">Copy Code</button>
+        </div>
+    </div>
+    <script>
+        const chatbotPreview = document.getElementById('chatbotPreview');
+        const codeOutput = document.getElementById('codeOutput');
+        const copyButton = document.getElementById('copyButton');
+
+        // Get all input elements
+        const inputs = document.querySelectorAll('input, select');
+
+        function updateChatbot() {
+            // General
+            chatbotPreview.style.width = `${document.getElementById('chatWidth').value}px`;
+            chatbotPreview.style.height = `${document.getElementById('chatHeight').value}px`;
+            chatbotPreview.style.borderRadius = `${document.getElementById('borderRadius').value}px`;
+            chatbotPreview.style.fontFamily = document.getElementById('fontFamily').value;
+
+            // Header
+            const header = chatbotPreview.querySelector('.chat-header');
+            header.style.background = document.getElementById('headerColor').value;
+            header.style.color = document.getElementById('headerTextColor').value;
+            header.textContent = document.getElementById('headerText').value;
+            header.style.fontSize = `${document.getElementById('headerFontSize').value}px`;
+
+            // Messages
+            const userMsg = chatbotPreview.querySelector('.user-message');
+            const botMsg = chatbotPreview.querySelector('.bot-message');
+            userMsg.style.backgroundColor = document.getElementById('userMsgColor').value;
+            botMsg.style.backgroundColor = document.getElementById('botMsgColor').value;
+            userMsg.style.fontSize = `${document.getElementById('msgFontSize').value}px`;
+            botMsg.style.fontSize = `${document.getElementById('msgFontSize').value}px`;
+            userMsg.style.borderRadius = `${document.getElementById('msgBorderRadius').value}px`;
+            botMsg.style.borderRadius = `${document.getElementById('msgBorderRadius').value}px`;
+
+            // Input Area
+            const inputArea = chatbotPreview.querySelector('.chat-input');
+            const input = inputArea.querySelector('input');
+            const button = inputArea.querySelector('button');
+            inputArea.style.backgroundColor = document.getElementById('inputBgColor').value;
+            input.style.color = document.getElementById('inputTextColor').value;
+            button.style.backgroundColor = document.getElementById('buttonColor').value;
+            button.style.color = document.getElementById('buttonTextColor').value;
+
+            updateCodeOutput();
+        }
+
+        function updateCodeOutput() {
+            const htmlCode = `
+<div id="chatbot">
+    <div class="chat-header">${document.getElementById('headerText').value}</div>
+    <div class="chat-messages"></div>
+    <div class="chat-input">
+        <input type="text" id="userInput" placeholder="Type your message...">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+</div>`;
+
+            const cssCode = `
+#chatbot {
+    width: ${document.getElementById('chatWidth').value}px;
+    height: ${document.getElementById('chatHeight').value}px;
+    border: 1px solid #ccc;
+    border-radius: ${document.getElementById('borderRadius').value}px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    font-family: ${document.getElementById('fontFamily').value};
+}
+.chat-header {
+    background: ${document.getElementById('headerColor').value};
+    color: ${document.getElementById('headerTextColor').value};
+    padding: 15px;
+    font-weight: bold;
+    text-align: center;
+    font-size: ${document.getElementById('headerFontSize').value}px;
+}
+.chat-messages {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 15px;
+}
+.message {
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: ${document.getElementById('msgBorderRadius').value}px;
+    max-width: 80%;
+    font-size: ${document.getElementById('msgFontSize').value}px;
+}
+.user-message {
+    background-color: ${document.getElementById('userMsgColor').value};
+    align-self: flex-end;
+    margin-left: auto;
+}
+.bot-message {
+    background-color: ${document.getElementById('botMsgColor').value};
+    align-self: flex-start;
+}
+.chat-input {
+    display: flex;
+    padding: 15px;
+    background: ${document.getElementById('inputBgColor').value};
+}
+.chat-input input {
+    flex-grow: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    color: ${document.getElementById('inputTextColor').value};
+}
+.chat-input button {
+    padding: 10px 20px;
+    background: ${document.getElementById('buttonColor').value};
+    color: ${document.getElementById('buttonTextColor').value};
+    border: none;
+    border-radius: 20px;
+    margin-left: 10px;
+    cursor: pointer;
+}`;
+
+            const jsCode = `
+const apiKey = "${document.getElementById('apiKey').value}"; // Your OpenAI API key
+const model = "${document.getElementById('model').value}"; // Selected OpenAI model
+
+async function sendMessage() {
+    const userInput = document.getElementById('userInput');
+    const message = userInput.value.trim();
+    if (message) {
+        addMessage('User', message);
+        userInput.value = '';
+        await fetchBotResponse(message);
+    }
+}
+
+function addMessage(sender, text) {
+    const messagesContainer = document.querySelector('.chat-messages');
+    const messageElement = document.createElement('div');
+    messageElement.classList.add('message', sender.toLowerCase() + '-message');
+    messageElement.innerHTML = \`<strong>\${
